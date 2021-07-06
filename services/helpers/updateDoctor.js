@@ -1,18 +1,17 @@
-const { Doctor, Address, Phone } = require('../../models');
+
+const { Doctor, Address, Phone, DoctorsSpecialty } = require('../../models');
 const buscaCep = require('busca-cep');
 const { validateAndCreateSpecialtyData } = require('../validators/specialtyValidator');
 
-
-
-const createNameAndCRM = async (fullName, CRM) => {
-  const doctor = await Doctor.create({ fullName, CRM });
+const updateNameAndCRM = async (fullName, CRM, id) => {
+  const doctor = await Doctor.update({ fullName, CRM }, { where: { id } });
   return doctor;
 }
 
-const createAddress = async (addressData, id) => {
+const updateAddress = async (addressData, id) => {
   const { streetAddress, streetNumber, complement, zipCode } = addressData;
   const cepData = await buscaCep(`${zipCode}`, { sync: true });
-  await Address.create({
+  await Address.update({
     streetAddress,
     streetNumber,
     complement,
@@ -21,10 +20,11 @@ const createAddress = async (addressData, id) => {
     state: cepData.uf,
     zipCode,
     doctorId: id
-  });
+  }, { where: { id } });
 }
 
-const createPhone = async (phone, id) => {
+const updatePhone = async (phone, id) => {
+  await Phone.destroy({ where: { doctorId: id }})
   await Promise.all(phone.map((phone) => 
   Phone.create({
     type: phone.type,
@@ -34,13 +34,14 @@ const createPhone = async (phone, id) => {
   })));
 }
 
-const createSpecialties = async (specialty, id) => {
+const updateSpecialty = async (specialty, id) => {
+  await DoctorsSpecialty.destroy({ where: { doctorId: id }})
   await validateAndCreateSpecialtyData(specialty, id);
 }
 
 module.exports = {
-  createNameAndCRM,
-  createAddress,
-  createPhone,
-  createSpecialties
+  updateAddress,
+  updatePhone,
+  updateSpecialty,
+  updateNameAndCRM
 }

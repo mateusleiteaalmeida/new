@@ -31,8 +31,22 @@ const createDoctor = async (req, res) => {
   }
 };
 
+const updateDoctor = async (req, res) => {
+  try {
+    const data = req.body;
+    const { id } = req.params;
+    const result = await DoctorsService.updateDoctor(id, data);
+    if (result.code) return res.status(result.code).json({ message: result.message })
+    return res.status(200).json(result);
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json(error);
+  }
+};
+
 module.exports = {
   getAllDoctors,
   getDoctorById,
   createDoctor,
+  updateDoctor
 }

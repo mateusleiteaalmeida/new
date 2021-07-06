@@ -9,16 +9,6 @@ const getAllDoctors = async (req, res) => {
   }
 };
 
-const getDoctorById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const result = await DoctorsService.getDoctorById(id);
-    return res.status(200).json(result);
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-}
-
 const createDoctor = async (req, res) => {
   try {
     const data = req.body;
@@ -54,10 +44,25 @@ const deleteDoctor = async (req, res) => {
   }
 };
 
+const findDoctorByAttribute = async (req, res) => {
+  try {
+    const query = req.query;
+    const body = {
+      attribute: Object.keys(query)[0],
+      value: Object.values(query)[0]
+    }
+    const result = await DoctorsService.findDoctorByAttribute(body);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json(error);
+  }
+};
+
 module.exports = {
   getAllDoctors,
-  getDoctorById,
   createDoctor,
   updateDoctor,
-  deleteDoctor
+  deleteDoctor,
+  findDoctorByAttribute
 }

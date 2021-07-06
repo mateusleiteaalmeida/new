@@ -1,4 +1,4 @@
-const { Doctor, Address, Phone, Specialty } = require('../models');
+const { Doctor, Address, Phone, Specialty, DoctorsSpecialty } = require('../models');
 const { createNameAndCRM, createAddress, createPhone, createSpecialties } = require('./helpers/createDoctor');
 const { updateNameAndCRM, updateAddress, updatePhone, updateSpecialty } = require('./helpers/updateDoctor');
 
@@ -37,9 +37,18 @@ const updateDoctor = async (id, data) => {
   return { message: 'Dados do médico atualizados com sucesso'}
 }
 
+const deleteDoctor = async (id) => {
+  const result = await Doctor.destroy({ where: { id }});
+  await Address.destroy({ where: { doctorId: id } });
+  await Phone.destroy({ where: { doctorId: id } });
+  await DoctorsSpecialty.destroy({ where: { doctorId: id } });
+  return { message: 'Dados do médico removidos com sucesso' };
+}
+
 module.exports = {
   getAllDoctors,
   getDoctorById,
   createDoctor,
-  updateDoctor
+  updateDoctor,
+  deleteDoctor
 }

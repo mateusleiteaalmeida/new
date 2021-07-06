@@ -1,4 +1,5 @@
 const { Doctor, Address, Phone, Specialty } = require('../models');
+const { createNameAndCRM, createAddress, createPhone, createSpecialties } = require('./helpers/createDoctor');
 
 const includeData = { include: [
     { model: Address, as: 'address', attributes: { exclude: ['id', 'doctorId'] } },
@@ -16,7 +17,18 @@ const getDoctorById = async (id) => {
   return doctors;
 }
 
+const createDoctor = async (data) => {
+  const { fullName, CRM, address, phone, specialty } = data;
+  const doctorCreated = await createNameAndCRM(fullName, CRM);
+  const { id } = doctorCreated.dataValues;
+  await createAddress(address, id);
+  await createPhone(phone, id);
+  await createSpecialties(specialty, id);
+  return { message: 'Médico criado com sucesso' }
+}
+
 module.exports = {
   getAllDoctors,
-  getDoctorById
+  getDoctorById,
+  createDoctor
 }

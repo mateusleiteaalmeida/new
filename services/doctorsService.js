@@ -1,6 +1,7 @@
 const { Doctor, Address, Phone, Specialty, DoctorsSpecialty } = require('../models');
 const { createNameAndCRM, createAddress, createPhone, createSpecialties } = require('./helpers/createDoctor');
 const { updateNameAndCRM, updateAddress, updatePhone, updateSpecialty } = require('./helpers/updateDoctor');
+const { findById, findByName, findByCRM, findByAddress, findByPhone, findBySpecialty } = require('./helpers/searchDoctor');
 
 const includeData = { include: [
     { model: Address, as: 'address', attributes: { exclude: ['id', 'doctorId'] } },
@@ -10,11 +11,6 @@ const includeData = { include: [
 
 const getAllDoctors = async () => {
   const doctors = await Doctor.findAll(includeData);
-  return doctors;
-}
-
-const getDoctorById = async (id) => {
-  const doctors = await Doctor.findByPk(id, includeData);
   return doctors;
 }
 
@@ -45,10 +41,37 @@ const deleteDoctor = async (id) => {
   return { message: 'Dados do médico removidos com sucesso' };
 }
 
+const findDoctorByAttribute = async (query) => {
+  const { attribute, value } = query
+  let doctors = [];
+  switch (attribute) {
+    case 'id':
+      doctors = await findById(doctors, value)
+      break;
+    case 'fullName':
+      doctors = await findByName(doctors, attribute, value)
+      break;
+    case 'CRM':
+      doctors = await findByCRM(doctors, attribute, value)
+      break;
+    case 'address':
+      doctors = await findByAddress(doctors, value)
+      break
+    case 'phone':
+      doctors = await findByPhone(doctors, value)
+      break;
+    case 'specialty':
+      doctors = await findBySpecialty(doctors, value)
+      break
+    default:
+  }
+  return doctors;
+}
+
 module.exports = {
   getAllDoctors,
-  getDoctorById,
   createDoctor,
   updateDoctor,
-  deleteDoctor
+  deleteDoctor,
+  findDoctorByAttribute
 }

@@ -1,6 +1,7 @@
 const { Doctor, Address, Phone } = require('../../models');
 const buscaCep = require('busca-cep');
 const { validateAndCreateSpecialtyData } = require('../validators/specialtyValidator');
+const { INVALIDZIPCODE } = require('../../utils/messages');
 
 const createNameAndCRM = async (fullName, CRM, createTransaction) => {
   const doctor = await Doctor.create({ fullName, CRM }, { transaction: createTransaction });
@@ -10,7 +11,7 @@ const createNameAndCRM = async (fullName, CRM, createTransaction) => {
 const createAddress = async (addressData, id, createTransaction) => {
   const { streetAddress, streetNumber, complement, zipCode } = addressData;
   const cepData = await buscaCep(`${zipCode}`, { sync: true });
-  if (cepData.erro || cepData.hasError) throw { message: 'Invalid zip code' }
+  if (cepData.erro || cepData.hasError) throw { message: INVALIDZIPCODE }
   await Address.create({
     zipCode: parseInt(streetNumber),
     streetAddress,

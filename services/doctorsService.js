@@ -2,7 +2,9 @@ const { Doctor, Address, Phone, Specialty, DoctorsSpecialty, sequelize } = requi
 const { createNameAndCRM, createAddress, createPhone, createSpecialties } = require('./helpers/createDoctor');
 const { updateNameAndCRM, updateAddress, updatePhone, updateSpecialties } = require('./helpers/updateDoctor');
 const { findById, findByName, findByCRM, findByAddress, findByPhone, findBySpecialty } = require('./helpers/searchDoctor');
-const validateDoctorData = require('./validators/doctorValidator')
+const validateDoctorData = require('./validators/doctorValidator');
+const { BADREQUEST, NOTFOUND } = require('../utils/status');
+const { DOCTORSCREATED, DOCTORSUPDATED, DOCTORSDELETED, NOTFOUNDDOCTORS} = require('../utils/messages');
 
 const includeData = { include: [
     { model: Address, as: 'address', attributes: { exclude: ['id', 'doctorId'] } },
@@ -19,7 +21,7 @@ const createDoctor = async (data) => {
   const createTransaction = await sequelize.transaction();
   try {
     const { error } = validateDoctorData(data);    
-    if (error) return {message: error.details[0].message, code: 400};
+    if (error) return {message: error.details[0].message, code: BADREQUEST};
     const { fullName, CRM, address, phone, specialty } = data;
     const doctorCreated = await createNameAndCRM(fullName, CRM, createTransaction);
     const { id } = doctorCreated.dataValues;
@@ -27,9 +29,9 @@ const createDoctor = async (data) => {
     await createPhone(phone, id, createTransaction);
     await createSpecialties(specialty, id, createTransaction);
     await createTransaction.commit();
-    return { message: 'Dados do médico criados com sucesso' }
+    return { message: DOCTORSCREATED }
   } catch (error) {
-    return { message: error.message, code: 400 };
+    return { message: error.message, code: BADREQUEST };
   }
 }
 
@@ -37,16 +39,16 @@ const updateDoctor = async (id, data) => {
   const updateTransaction = await sequelize.transaction();
   try {
     const { error } = validateDoctorData(data);    
-    if (error) return { message: error.details[0].message, code: 400 };
+    if (error) return { message: error.details[0].message, code: BADREQUEST };
     const { fullName, CRM, address, phone, specialty } = data;
     await updateNameAndCRM(fullName, CRM, id, updateTransaction);
     await updateAddress(address, id, updateTransaction);
     await updatePhone(phone, id, updateTransaction);
     await updateSpecialties(specialty, id, updateTransaction);
     await updateTransaction.commit();
-    return { message: 'Dados do médico atualizados com sucesso'}
+    return { message: DOCTORSUPDATED }
   } catch (error) {
-    return { message: error.message, code: 400 };
+    return { message: error.message, code: BADREQUEST };
   }
 }
 
@@ -54,13 +56,14 @@ const deleteDoctor = async (id) => {
   const deleteTransaction = await sequelize.transaction();
   try {
     const result = await Doctor.destroy({ where: { id }}, { transaction: deleteTransaction });
+    if (result === 0) return { message: NOTFOUNDDOCTORS, code: NOTFOUND }
     await Address.destroy({ where: { doctorId: id } }, { transaction: deleteTransaction });
     await Phone.destroy({ where: { doctorId: id } }, { transaction: deleteTransaction });
     await DoctorsSpecialty.destroy({ where: { doctorId: id } }, { transaction: deleteTransaction });
     await deleteTransaction.commit();
-    return { message: 'Dados do médico removidos com sucesso' };
+    return { message: DOCTORSDELETED };
   } catch (error) {
-    return { message: error.message, code: 400 };
+    return { message: error.message, code: BADREQUEST };
   }
 }
 
@@ -88,6 +91,7 @@ const findDoctorByAttribute = async (query) => {
       break
     default:
   }
+  if (!doctors[0]) return { message: NOTFOUNDDOCTORS, code: NOTFOUND }
   return doctors;
 }
 

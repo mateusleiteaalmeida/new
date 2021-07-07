@@ -1,0 +1,13 @@
+const OK = 200;
+const CREATED = 201;
+const BADREQUEST = 400;
+const NOTFOUND = 404;
+const INTERNALSERVERERROR = 500;
+
+module.exports = {
+  OK,
+  CREATED,
+  BADREQUEST,
+  NOTFOUND,
+  INTERNALSERVERERROR
+};

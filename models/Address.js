@@ -1,12 +1,12 @@
 const Address = (sequelize, DataTypes) => {
   const Address = sequelize.define('Address', {
+    zipCode: DataTypes.INTEGER,
     streetAddress: DataTypes.STRING,
     streetNumber: DataTypes.INTEGER,
     complement: DataTypes.STRING,
     neighborhood: DataTypes.STRING,
     city: DataTypes.STRING,
     state: DataTypes.STRING,
-    zipCode: DataTypes.INTEGER,
     doctorId: { type: DataTypes.INTEGER, foreignKey: true }
   },
   {

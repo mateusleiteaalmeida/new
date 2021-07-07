@@ -9,6 +9,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false
       },
+      zipCode: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
       streetAddress: {
         type: Sequelize.STRING,
         allowNull: false
@@ -31,10 +35,6 @@ module.exports = {
       },
       state: {
         type: Sequelize.STRING,
-        allowNull: false
-      },
-      zipCode: {
-        type: Sequelize.INTEGER,
         allowNull: false
       },
       doctorId: {

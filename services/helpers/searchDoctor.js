@@ -4,7 +4,7 @@ const { Op } = require('sequelize');
 const includeData = { include: [
   { model: Address, as: 'address', attributes: { exclude: ['id', 'doctorId'] } },
   { model: Phone, as: 'phone', attributes: { exclude: ['id', 'doctorId'] } },
-  { model: Specialty, as: 'specialties', attributes: ['name'], through: { attributes: [] } }
+  { model: Specialty, as: 'specialty', attributes: ['name'], through: { attributes: [] } }
 ]};
 
 const findById = async (doctors, value) => {
@@ -44,7 +44,7 @@ const findByPhone = async (doctors, value) => {
 const findBySpecialty = async (doctors, value) => {
   doctors = await Doctor.findAll(includeData).then((response) =>
   JSON.parse(JSON.stringify(response))).then((result) => result.filter((res) =>
-    res.specialties.map((spec) => spec.name)
+    res.specialty.map((spec) => spec.name)
       .findIndex((spec) => spec.includes(value)) !== -1));
   return doctors;
 }

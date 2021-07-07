@@ -1,41 +1,41 @@
 const { Doctor, Address, Phone } = require('../../models');
 const buscaCep = require('busca-cep');
 const { validateAndCreateSpecialtyData } = require('../validators/specialtyValidator');
+const { INVALIDZIPCODE } = require('../../utils/messages');
 
-
-
-const createNameAndCRM = async (fullName, CRM) => {
-  const doctor = await Doctor.create({ fullName, CRM });
+const createNameAndCRM = async (fullName, CRM, createTransaction) => {
+  const doctor = await Doctor.create({ fullName, CRM }, { transaction: createTransaction });
   return doctor;
 }
 
-const createAddress = async (addressData, id) => {
+const createAddress = async (addressData, id, createTransaction) => {
   const { streetAddress, streetNumber, complement, zipCode } = addressData;
   const cepData = await buscaCep(`${zipCode}`, { sync: true });
+  if (cepData.erro || cepData.hasError) throw { message: INVALIDZIPCODE }
   await Address.create({
+    zipCode: parseInt(streetNumber),
     streetAddress,
-    streetNumber,
+    streetNumber: parseInt(streetNumber),
     complement,
     neighborhood: cepData.bairro,
     city: cepData.localidade,
     state: cepData.uf,
-    zipCode,
     doctorId: id
-  });
+  }, { transaction: createTransaction });
 }
 
-const createPhone = async (phone, id) => {
+const createPhone = async (phone, id, createTransaction) => {
   await Promise.all(phone.map((phone) => 
   Phone.create({
     type: phone.type,
-    ddd: phone.ddd,
-    number: phone.number,
+    ddd: parseInt(phone.ddd),
+    number: parseInt(phone.number),
     doctorId: id
-  })));
+  }, { transaction: createTransaction })));
 }
 
-const createSpecialties = async (specialty, id) => {
-  await validateAndCreateSpecialtyData(specialty, id);
+const createSpecialties = async (specialty, id, createTransaction) => {
+  await validateAndCreateSpecialtyData(specialty, id, createTransaction);
 }
 
 module.exports = {

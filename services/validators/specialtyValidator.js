@@ -1,11 +1,13 @@
 const { Specialty, DoctorsSpecialty } = require('../../models');
 
-const findSpecialtyIdAndCreate = async (doctorId, specialty) => {
+const findSpecialtyIdAndCreate = async (doctorId, specialty, transaction) => {
   const foundSpecialty = await Specialty.findOne({ where: { name: specialty } });
-  const createDoctorSpecialty = await DoctorsSpecialty.create({ doctorId, specialtyId: foundSpecialty.dataValues.id })
+  const createDoctorSpecialty = await DoctorsSpecialty.create(
+    { doctorId, specialtyId: foundSpecialty.dataValues.id },
+    { transaction })
 }
 
-const validateAndCreateSpecialtyData = async (specialty, doctorId) => {
+const validateAndCreateSpecialtyData = async (specialty, doctorId, transaction) => {
   const allSpecialties = await Specialty.findAll();
   const allNames = allSpecialties.map((specialtyData) => specialtyData.name.toUpperCase());
   const newSpecialties = specialty.filter((specialty) => !allNames.includes(specialty.toUpperCase()));
@@ -15,7 +17,7 @@ const validateAndCreateSpecialtyData = async (specialty, doctorId) => {
   })))
   const allSpecialtiesNames = oldSpecialties.concat(newSpecialties);
   await Promise.all(allSpecialtiesNames.map((async (name) => {
-    await findSpecialtyIdAndCreate(doctorId, name.toUpperCase())
+    await findSpecialtyIdAndCreate(doctorId, name.toUpperCase(), transaction)
   })))
 };
 

@@ -9,7 +9,7 @@ const DoctorsSpecialty = (sequelize, DataTypes) => {
 
   DoctorsSpecialty.associate = (models) => {
     models.Doctor.belongsToMany(models.Specialty, {
-      as: 'specialties',
+      as: 'specialty',
       through: DoctorsSpecialty,
       foreignKey: 'doctorId',
       otherKey: 'specialtyId'

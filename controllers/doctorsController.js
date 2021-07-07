@@ -13,6 +13,7 @@ const createDoctor = async (req, res) => {
   try {
     const data = req.body;
     const result = await DoctorsService.createDoctor(data);
+    if (result.code) return res.status(result.code).json({ message: result.message })
     return res.status(201).json(result);
   } catch (error) {
     console.log(error)

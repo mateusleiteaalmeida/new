@@ -4,6 +4,7 @@ const { OK, CREATED, INTERNALSERVERERROR } = require('../utils/status')
 const getAllDoctors = async (req, res) => {
   try {
     const result = await DoctorsService.getAllDoctors();
+    if (result.code) return res.status(result.code).json({ message: result.message })
     return res.status(OK).json(result);
   } catch (error) {
     console.log(error);

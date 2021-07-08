@@ -4,7 +4,7 @@ const { updateNameAndCRM, updateAddress, updatePhone, updateSpecialties } = requ
 const { findById, findByName, findByCRM, findByAddress, findByPhone, findBySpecialty } = require('./helpers/searchDoctor');
 const validateDoctorData = require('./validators/doctorValidator');
 const { BADREQUEST, NOTFOUND } = require('../utils/status');
-const { DOCTORSCREATED, DOCTORSUPDATED, DOCTORSDELETED, NOTFOUNDDOCTORS} = require('../utils/messages');
+const { DOCTORSCREATED, DOCTORSUPDATED, DOCTORSDELETED, NOTFOUNDDOCTORS } = require('../utils/messages');
 
 const includeData = { include: [
     { model: Address, as: 'address', attributes: { exclude: ['id', 'doctorId'] } },
@@ -14,6 +14,7 @@ const includeData = { include: [
 
 const getAllDoctors = async () => {
   const doctors = await Doctor.findAll(includeData);
+  if (!doctors.length) return { message: NOTFOUNDDOCTORS, code: NOTFOUND }
   return doctors;
 }
 
@@ -40,6 +41,8 @@ const updateDoctor = async (id, data) => {
   try {
     const { error } = validateDoctorData(data);    
     if (error) return { message: error.details[0].message, code: BADREQUEST };
+    const findDoctor = await Doctor.findOne({ where: { id }});
+    if (!findDoctor) return { message: NOTFOUNDDOCTORS, code: NOTFOUND }
     const { fullName, CRM, address, phone, specialty } = data;
     await updateNameAndCRM(fullName, CRM, id, updateTransaction);
     await updateAddress(address, id, updateTransaction);

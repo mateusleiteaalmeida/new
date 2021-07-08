@@ -6,7 +6,7 @@ const swaggerUi = require('swagger-ui-express')
 const swaggerFile = require('./swagger_output.json')
 
 
-const doctorsRoute = require('./routes/doctorsRoutes');
+const doctorsRoute = require('./src/routes/doctorsRoutes');
 
 app.use(express.json());
 

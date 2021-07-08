@@ -4,29 +4,29 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert('Phones', [
       {
-        type: 'celular',
-        ddd: '31',
-        number: '991234569',
-        doctorId: 1
-      },
-      {
-        type: 'telefone',
+        type: 'Telefone',
         ddd: '31',
         number: '31231234',
         doctorId: 1
       },
       {
-        type: 'celular',
+        type: 'Celular',
+        ddd: '31',
+        number: '991234569',
+        doctorId: 1
+      },
+      {
+        type: 'Telefone',
+        ddd: '21',
+        number: '32987654',
+        doctorId: 2
+      },
+      {
+        type: 'Celular',
         ddd: '21',
         number: '998754321',
         doctorId: 2
       },
-      {
-        type: 'telefone',
-        ddd: '21',
-        number: '32987654',
-        doctorId: 2
-      }
     ])
   },
 

@@ -1,0 +1,470 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "API - Doctors Records Manager",
+    "description": "Documentation of an application to register doctors.",
+    "contact": {
+      "email": "mateuslaalmeida@gmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/",
+      "description": "Test API"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/doctor": {
+      "get": {
+        "summary": "List doctors",
+        "description": "This endpoint list all registered doctors",
+        "tags": ["Doctors"],
+        "responses": {
+          "200": {
+            "description": "Doctors list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/Doctor"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No doctors were found"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create doctor",
+        "description": "This endpoint create a new doctor register",
+        "tags": ["Doctors"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Doctor"
+              },
+              "examples": {
+                "doctor": {
+                  "value": {
+                    "fullName": "Rob Doe",
+                    "CRM": "123456",
+                    "address": {
+                      "zipCode": "30160040",
+                      "streetAddress": "Rua Rio de Janeiro",
+                      "streetNumber": "100",
+                      "complement": "Apto 99"
+                    },
+                    "phone": [
+                      {
+                        "type": "Telefone",
+                        "ddd": "31",
+                        "number": "32323232"
+                      },
+                      {
+                        "type": "Celular",
+                        "ddd": "31",
+                        "number": "998989898"
+                      }
+                    ],
+                    "specialty": [
+                      "PEDIATRIA", "CARDIOLOGIA INFANTIL"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Doctors data sucessfully created"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
+    "/doctor/{id}": {
+      "put": {
+        "summary": "Update doctor",
+        "description": "This endpoint update a doctor register",
+        "tags": ["Doctors"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Doctors id to update"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Doctor"
+              },
+              "examples": {
+                "doctor": {
+                  "value": {
+                    "fullName": "Steve Doe",
+                    "CRM": "654321",
+                    "address": {
+                      "zipCode": "30160040",
+                      "streetAddress": "Rua Rio de Janeiro",
+                      "streetNumber": "200",
+                      "complement": "Apto 150"
+                    },
+                    "phone": [
+                      {
+                        "type": "Telefone",
+                        "ddd": "21",
+                        "number": "31313131"
+                      },
+                      {
+                        "type": "Celular",
+                        "ddd": "21",
+                        "number": "997979797"
+                      }
+                    ],
+                    "specialty": [
+                      "CIRURGIA CARDIACA", "CIRURGIA DE TORAX"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Doctors data sucessfully updated"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "No doctors were found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete doctor",
+        "description": "This endpoint delete a doctors register",
+        "tags": ["Doctors"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Doctors id to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Doctors data sucessfully deleted"
+          },
+          "404": {
+            "description": "No doctors were found"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/search?id": {
+      "get": {
+        "summary": "Search doctors by Id",
+        "description": "This endpoint search doctors by their ids",
+        "tags": ["Doctors"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Doctors id that will be searched",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Doctors list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/Doctor"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No doctors were found"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/search?fullName": {
+      "get": {
+        "summary": "Search doctors by name",
+        "description": "This endpoint search doctors by their full names",
+        "tags": ["Doctors"],
+        "parameters": [
+          {
+            "name": "fullName",
+            "in": "query",
+            "description": "Doctors full name that will be searched",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Doctors list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/Doctor"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No doctors were found"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/search?CRM": {
+      "get": {
+        "summary": "Search doctors by CRM",
+        "description": "This endpoint search doctors by their CRM",
+        "tags": ["Doctors"],
+        "parameters": [
+          {
+            "name": "CRM",
+            "in": "query",
+            "description": "Doctors CRM that will be searched",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Doctors list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/Doctor"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No doctors were found"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/search?address": {
+      "get": {
+        "summary": "Search doctors by address",
+        "description": "This endpoint search doctors by their addresses",
+        "tags": ["Doctors"],
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "description": "Doctors address that will be searched",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Doctors list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/Doctor"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No doctors were found"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/search?phone": {
+      "get": {
+        "summary": "Search doctors by phone",
+        "description": "This endpoint search doctors by their phone numbers",
+        "tags": ["Doctors"],
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "query",
+            "description": "Doctors specialty that will be searched",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Doctors list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/Doctor"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No doctors were found"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/search?specialty": {
+      "get": {
+        "summary": "Search doctors by specialty",
+        "description": "This endpoint search doctors by their specialties",
+        "tags": ["Doctors"],
+        "parameters": [
+          {
+            "name": "specialty",
+            "in": "query",
+            "description": "Doctors specialty that will be searched",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Doctors list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/Doctor"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No doctors were found"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Doctor": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "CRM": {
+            "type": "string"
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "zipCode": {
+                "type": "string"
+              },
+              "streetAddress": {
+                "type": "string"
+              },
+              "streetNumber": {
+                "type": "string"
+              },
+              "complement": {
+                "type": "string"
+              }
+            }
+          },
+          "phone": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "ddd": {
+                  "type": "string"
+                },
+                "number": {
+                  "type": "string"
+                }
+              }
+            },
+            "minimum": 2
+          },
+          "specialty": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minimum": 2
+          }
+        }
+      }
+    }
+  }
+}

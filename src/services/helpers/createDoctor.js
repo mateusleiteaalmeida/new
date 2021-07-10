@@ -1,17 +1,17 @@
-const { Doctor, Address, Phone } = require('../../models');
+const { Doctor, Address, Phone, Specialty, DoctorsSpecialty } = require('../../models');
 const buscaCep = require('busca-cep');
-const { validateAndCreateSpecialtyData } = require('../validators/specialtyValidator');
 const { INVALIDZIPCODE } = require('../../utils/messages');
 
-const createNameAndCRM = async (fullName, CRM, createTransaction) => {
-  const doctor = await Doctor.create({ fullName, CRM }, { transaction: createTransaction });
-  return doctor;
+const createNameAndCRM = async (fullName, CRM, transaction) => {
+  const formatCRM = parseInt(CRM)
+  const doctor = await Doctor.create({ fullName, CRM: formatCRM }, { transaction });
+  return doctor.id;
 }
 
-const createAddress = async (addressData, id, createTransaction) => {
+const createAddress = async (addressData, doctorId, transaction) => {
   const { streetAddress, streetNumber, complement, zipCode } = addressData;
   const cepData = await buscaCep(`${zipCode}`, { sync: true });
-  if (cepData.erro || cepData.hasError) throw { message: INVALIDZIPCODE }
+  if (cepData.erro || cepData.hasError) throw { message: INVALIDZIPCODE, code: 400 }
   await Address.create({
     zipCode: parseInt(streetNumber),
     streetAddress,
@@ -20,22 +20,40 @@ const createAddress = async (addressData, id, createTransaction) => {
     neighborhood: cepData.bairro,
     city: cepData.localidade,
     state: cepData.uf,
-    doctorId: id
-  }, { transaction: createTransaction });
+    doctorId
+  }, { transaction });
 }
 
-const createPhone = async (phone, id, createTransaction) => {
-  await Promise.all(phone.map((phone) => 
+const createPhone = async (phone, doctorId, transaction) => {
+  const allPromises = await Promise.allSettled(phone.map((phone) => 
   Phone.create({
     type: phone.type,
     ddd: parseInt(phone.ddd),
     number: parseInt(phone.number),
-    doctorId: id
-  }, { transaction: createTransaction })));
+    doctorId
+  }, { transaction })));
+  console.log(allPromises)
+  const checkPromises = allPromises.every((promise) => promise.status === 'fulfilled');
+  console.log(checkPromises)
+  if (checkPromises) await transaction.commit();
 }
 
-const createSpecialties = async (specialty, id, createTransaction) => {
-  await validateAndCreateSpecialtyData(specialty, id, createTransaction);
+const createSpecialty = async (specialty, transaction) => {
+  const newSpecialties = await Promise.all(specialty.map(async (id) => {
+    const creat = await Specialty.findOrCreate({ where: { name: id }, transaction })
+    return creat[0].dataValues.id
+  }));
+  return newSpecialties
+}
+
+const createDoctorSpecialty = async (doctorId, specialtyId, transaction) =>
+  await Promise.all(specialtyId.map((id) =>
+  DoctorsSpecialty.create({ doctorId, specialtyId: id }, { transaction })));
+
+const createSpecialties = async (specialty, doctorId, transaction) => {
+  const formatedSpecialty = specialty.map((spec) => spec.toUpperCase())
+  const createdSpecialty = await createSpecialty(formatedSpecialty, transaction);
+  await createDoctorSpecialty(doctorId, createdSpecialty, transaction)
 }
 
 module.exports = {

@@ -1,6 +1,6 @@
 const { Doctor, Address, Phone, Specialty, DoctorsSpecialty, sequelize } = require('../models');
 const { createNameAndCRM, createAddress, createPhone, createSpecialties } = require('./helpers/createDoctor');
-const { updateNameAndCRM, updateAddress, updatePhone, updateSpecialties } = require('./helpers/updateDoctor');
+const { updateNameAndCRM, updateAddress, updatePhone, updateSpecialty } = require('./helpers/updateDoctor');
 const { findById, findByName, findByCRM, findByAddress, findByPhone, findBySpecialty } = require('./helpers/searchDoctor');
 const validateDoctorData = require('./validators/doctorValidator');
 const { BADREQUEST, NOTFOUND } = require('../utils/status');
@@ -12,45 +12,52 @@ const includeData = { include: [
     { model: Specialty, as: 'specialty', attributes: ['name'], through: { attributes: [] } }
 ]};
 
+const formatSpecialtyData = (doctor) => {
+  const result = JSON.parse(JSON.stringify(doctor));
+  const specialtiesNames = result.map((res) => res.specialty.map((acc) => acc.name));
+  result.map((actual,index) => actual.specialty = specialtiesNames[index])
+  return result;
+};
+
 const getAllDoctors = async () => {
   const doctors = await Doctor.findAll(includeData);
   if (!doctors.length) return { message: NOTFOUNDDOCTORS, code: NOTFOUND }
-  return doctors;
+  const doctorsFormated = formatSpecialtyData(doctors);
+  return doctorsFormated;
 }
 
 const createDoctor = async (data) => {
-  const createTransaction = await sequelize.transaction();
+  const createTransaction = await sequelize.transaction({ autocommit: false});
   try {
-    const { error } = validateDoctorData(data);    
-    if (error) return {message: error.details[0].message, code: BADREQUEST};
+    validateDoctorData(data);
     const { fullName, CRM, address, phone, specialty } = data;
-    const doctorCreated = await createNameAndCRM(fullName, CRM, createTransaction);
-    const { id } = doctorCreated.dataValues;
-    await createAddress(address, id, createTransaction);
-    await createPhone(phone, id, createTransaction);
-    await createSpecialties(specialty, id, createTransaction);
-    await createTransaction.commit();
+    const newNameAndCRM = await createNameAndCRM(fullName, CRM, createTransaction);
+    await createSpecialties(specialty, newNameAndCRM, createTransaction);
+    await createAddress(address, newNameAndCRM, createTransaction);
+    await createPhone(phone, newNameAndCRM, createTransaction);
     return { message: DOCTORSCREATED }
   } catch (error) {
+    console.log(error);
+    await createTransaction.rollback();
     return { message: error.message, code: BADREQUEST };
   }
 }
 
 const updateDoctor = async (id, data) => {
-  const updateTransaction = await sequelize.transaction();
+  const updateTransaction = await sequelize.transaction({ autocommit: false});
   try {
-    const { error } = validateDoctorData(data);    
-    if (error) return { message: error.details[0].message, code: BADREQUEST };
-    const findDoctor = await Doctor.findOne({ where: { id }});
+    validateDoctorData(data);    
+    const findDoctor = await Doctor.findOne({ where: { id }}, {transaction: updateTransaction});
     if (!findDoctor) return { message: NOTFOUNDDOCTORS, code: NOTFOUND }
     const { fullName, CRM, address, phone, specialty } = data;
+    await updateSpecialty(specialty, id, updateTransaction);
     await updateNameAndCRM(fullName, CRM, id, updateTransaction);
     await updateAddress(address, id, updateTransaction);
     await updatePhone(phone, id, updateTransaction);
-    await updateSpecialties(specialty, id, updateTransaction);
-    await updateTransaction.commit();
     return { message: DOCTORSUPDATED }
   } catch (error) {
+    console.log(error);
+    await updateTransaction.rollback();
     return { message: error.message, code: BADREQUEST };
   }
 }
@@ -66,6 +73,8 @@ const deleteDoctor = async (id) => {
     await deleteTransaction.commit();
     return { message: DOCTORSDELETED };
   } catch (error) {
+    console.log(error);
+    await deleteTransaction.rollback();
     return { message: error.message, code: BADREQUEST };
   }
 }
@@ -94,8 +103,10 @@ const findDoctorByAttribute = async (query) => {
       break
     default:
   }
+  console.log(!doctors[0])
   if (!doctors[0]) return { message: NOTFOUNDDOCTORS, code: NOTFOUND }
-  return doctors;
+  const doctorsFormated = formatSpecialtyData(doctors);
+  return doctorsFormated;
 }
 
 module.exports = {

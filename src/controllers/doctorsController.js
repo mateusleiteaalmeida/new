@@ -29,6 +29,7 @@ const updateDoctor = async (req, res) => {
     const data = req.body;
     const { id } = req.params;
     const result = await DoctorsService.updateDoctor(id, data);
+    console.log(result.message)
     if (result.code) return res.status(result.code).json({ message: result.message });
     return res.status(OK).json(result);
   } catch (error) {
@@ -57,7 +58,6 @@ const findDoctorByAttribute = async (req, res) => {
       value: Object.values(query)[0]
     }
     const result = await DoctorsService.findDoctorByAttribute(body);
-    console.log(result)
     if (result.code) return res.status(result.code).json({ message: result.message });
     return res.status(OK).json(result);
   } catch (error) {

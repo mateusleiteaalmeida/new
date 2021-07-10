@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "fullName": "John Doe",
+    "CRM": 1212,
+    "address": {
+      "zipCode": 30160030,
+      "streetAddress": "Rua Espirito Santo",
+      "streetNumber": 420,
+      "complement": "Apto 302",
+      "neighborhood": "Centro",
+      "city": "Belo Horizonte",
+      "state": "MG"
+    },
+    "phone": [
+      {
+        "type": "Celular",
+        "ddd": 31,
+        "number": 991234569
+      },
+      {
+        "type": "Telefone",
+        "ddd": 31,
+        "number": 31231234
+      }
+    ],
+    "specialty": [
+      "CARDIOLOGIA CLINICA",
+      "CARDIOLOGIA INFANTIL"
+    ]
+  },
+  {
+    "id": 2,
+    "fullName": "Jane Doe",
+    "CRM": 87878,
+    "address": {
+      "zipCode": 22080050,
+      "streetAddress": "Avenida Francisco Bhering",
+      "streetNumber": 500,
+      "complement": "Bloco A",
+      "neighborhood": "Ipanema",
+      "city": "Rio de Janeiro",
+      "state": "RJ"
+    },
+    "phone": [
+      {
+        "type": "Celular",
+        "ddd": 21,
+        "number": 998754321
+      },
+      {
+        "type": "Telefone",
+        "ddd": 21,
+        "number": 32987654
+      }
+    ],
+    "specialty": [
+      "CIRURGIA CABEÇA E PESCOCO",
+      "CIRURGIA DE TORAX"
+    ]
+  }
+]

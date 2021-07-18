@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="./assets/file.gif">
+  <img src="./assets/file.gif" width="120px">
   <br />
   Gerenciador de cadastros de médicos
 </h1>
@@ -25,6 +25,7 @@ Esse projeto foi desenvolvido utilizando as seguintes tecnologias:
 - [Sequelize](https://sequelize.org/)
 - [Jest](https://jestjs.io/)
 - [Swagger](https://swagger.io/)
+- [Docker](https://www.docker.com/)
 
 
 ## Iniciando
@@ -39,6 +40,7 @@ $ git clone https://github.com/mateusleiteaalmeida/node-doctors-registration-man
 $ docker-compose up
 ```
 
+
 ## Documentação
 
 Para acessar a documentação desta API basta iniciar a aplicação e acessar a rota /doc.
@@ -48,6 +50,13 @@ Exemplo:
 http://localhost:3000/doc
 
 
+## Banco de dados
+
+A organização das tabelas no banco de dados se estrutura da seguinte forma:
+
+<img src="./assets/tables.png">
+
+
 ## Melhorias
 
-É necessário realizar a melhoria nos testes.
+É necessário realizar melhorias nos testes.

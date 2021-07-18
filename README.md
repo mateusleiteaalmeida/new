@@ -54,8 +54,9 @@ http://localhost:3000/doc
 
 A organização das tabelas no banco de dados se estrutura da seguinte forma:
 
-<img src="./assets/tables.png">
-
+<p align="center">
+  <img src="./assets/tables.png">
+</p>
 
 ## Melhorias
 
